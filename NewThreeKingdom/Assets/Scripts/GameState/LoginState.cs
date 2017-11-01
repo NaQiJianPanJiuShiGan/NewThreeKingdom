@@ -8,6 +8,7 @@ public class LoginState : GameState
     protected override void OnLoadComplete(params object[] args)
     {
         Debug.Log("开始加载LoginState");
+        GUIManager.ShowView("LoginPanel");
     }
 
     protected override void OnStart()

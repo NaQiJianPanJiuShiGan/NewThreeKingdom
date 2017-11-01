@@ -84,13 +84,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\DontDestory.cs" />
+    <Compile Include="Assets\Scripts\GameMain.cs" />
     <Compile Include="Assets\Scripts\GameState\GameState.cs" />
     <Compile Include="Assets\Scripts\GameState\GameStateManager.cs" />
     <Compile Include="Assets\Scripts\GameState\LoginState.cs" />
     <Compile Include="Assets\Scripts\GameState\PlayerState.cs" />
     <Compile Include="Assets\Scripts\GameState\ScenesState.cs" />
-    <Compile Include="Assets\Scripts\LoadSceneManager.cs" />
-    <Compile Include="Assets\Scripts\SceneData.cs" />
+    <Compile Include="Assets\Scripts\Manager\LoadSceneManager.cs" />
+    <Compile Include="Assets\Scripts\Manager\ResourcesManager.cs" />
+    <Compile Include="Assets\Scripts\Modle\SceneData.cs" />
+    <Compile Include="Assets\Scripts\Test.cs" />
+    <Compile Include="Assets\Scripts\Tools.cs" />
+    <Compile Include="Assets\Scripts\UI\GUIManager.cs" />
+    <Compile Include="Assets\Scripts\UI\IVew.cs" />
+    <Compile Include="Assets\Scripts\UI\Panel\LoginPanel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

@@ -3,9 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Reflection;
 
-public class GameStateManager : MonoBehaviour {
+public class GameStateManager{
 
-    public Dictionary<string, GameState> m_GameStateDic = null;
+    private static GameStateManager gameStateManager;
+    private GameStateManager()
+    {
+
+    }
+    public static GameStateManager GetInstance()
+    {
+        if (gameStateManager==null)
+        {
+            m_GameStateDic = new Dictionary<string, GameState>();
+            gameStateManager = new GameStateManager();
+        }
+        return gameStateManager;
+    }
+
+    private static Dictionary<string, GameState> m_GameStateDic = null;
 
     public GameState m_CurrentGameState;
     
@@ -15,17 +30,16 @@ public class GameStateManager : MonoBehaviour {
         {
             m_CurrentGameState.Stop();
         }
-        else return;
         m_CurrentGameState = gameState;
         m_CurrentGameState.Start();
     }
     public void LoadScene(int sceneID)
     {
-        SceneData sceneDate = new SceneData();
+        SceneData sceneDate = new SceneData();//应该通过ID读取配置文件获取场景信息
         sceneDate.ID = 1;
         sceneDate.Name = "";
-        sceneDate.LevelName = "PlayerScene";
-        sceneDate.GameState = "PlayerState";
+        sceneDate.LevelName = "LoginScene";
+        sceneDate.GameState = "LoginState";
 
         if (sceneDate==null||string.IsNullOrEmpty(sceneDate.GameState)||string.IsNullOrEmpty(sceneDate.LevelName))
         {
