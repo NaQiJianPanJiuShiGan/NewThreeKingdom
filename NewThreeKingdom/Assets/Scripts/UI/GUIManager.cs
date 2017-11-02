@@ -80,7 +80,7 @@ public static class GUIManager {
         KeyValuePair<GameObject, IVew> pair;
         if (!m_UIViewDic.TryGetValue(name,out pair))
         {
-            Debug.LogError(name+"界面有错误，没有经过字典管理进行加载了");
+            Debug.LogError(name+"界面有错误，没有经过字典管理进行加载");
         }
         pair.Key.SetActive(false);
         pair.Value.Hide();
@@ -89,6 +89,7 @@ public static class GUIManager {
     {
         foreach (var item in m_UIViewDic)
         {
+
             if (item.Value.Key.activeInHierarchy)
             {
                 item.Value.Value.Update();

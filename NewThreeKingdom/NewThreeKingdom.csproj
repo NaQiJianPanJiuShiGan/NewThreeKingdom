@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.1f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -94,6 +96,8 @@
     <Compile Include="Assets\Scripts\Manager\LoadSceneManager.cs" />
     <Compile Include="Assets\Scripts\Manager\ResourcesManager.cs" />
     <Compile Include="Assets\Scripts\Modle\SceneData.cs" />
+    <Compile Include="Assets\Scripts\Skill\Skill.cs" />
+    <Compile Include="Assets\Scripts\Skill\SkillTest.cs" />
     <Compile Include="Assets\Scripts\Test.cs" />
     <Compile Include="Assets\Scripts\Tools.cs" />
     <Compile Include="Assets\Scripts\UI\GUIManager.cs" />
