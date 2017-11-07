@@ -4,8 +4,8 @@ using System.Reflection;
 using UnityEngine;
 
 public static class GUIManager {
-    //LoginPanel string:"LoginPanel" GameObject:LoginPanel IVew:LoginPanel.cs
 
+    //LoginPanel string:"LoginPanel" GameObject:LoginPanel IVew:LoginPanel.cs
     //代码与预制体分离
     private static Dictionary<string, KeyValuePair<GameObject, IVew>> m_UIViewDic =
         new Dictionary<string, KeyValuePair<GameObject, IVew>>();
@@ -96,6 +96,12 @@ public static class GUIManager {
             }
         }
     }
+    /// <summary>
+    /// 通过GUIManger中的字典获取GameObject下的某个节点
+    /// </summary>
+    /// <param name="view">当前View</param>
+    /// <param name="name">子节点名称</param>
+    /// <returns></returns>
     public static GameObject GetChild(this IVew view ,string name)
     {
         GameObject prefab = null;
@@ -120,19 +126,19 @@ public static class GUIManager {
         }
         return child.gameObject;
     }
-    public static T GetChild<T>(this IVew view,string name) where T : MonoBehaviour
+    public static T GetChild<T>(this IVew view,string name)
     {
         GameObject child = GetChild(view,name);
         if (child==null)
         {
             Debug.LogError(name+"is not child of"+view);
-            return null;
+            return default(T);
         }
         T t = child.GetComponent<T>();
         if (t==null)
         {
             Debug.LogError(name+"子物体没有这个组件");
-            return null;
+            return default(T);
         }
         return t;
     }

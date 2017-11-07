@@ -7,7 +7,6 @@ public class GameMain : MonoBehaviour {
     void Awake()
     {
         AddComponent();
-
     }
     // Use this for initialization
     void Start () {
@@ -15,7 +14,6 @@ public class GameMain : MonoBehaviour {
 	void AddComponent()
     {
         gameObject.AddComponent<LoadSceneManager>();
-
     }
     void DoSomeSetting()
     {

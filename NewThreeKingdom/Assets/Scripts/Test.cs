@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Test : MonoBehaviour {
-    GameStateManager gameStateManager;
-    // Use this for initialization
-    void Start () {
-        gameStateManager = GameStateManager.GetInstance();
-        gameStateManager.SetState(new LoginState());
-        gameStateManager.LoadScene(1);
-        DontDestroyOnLoad(this);
+
+	// Use this for initialization
+	void Start () {
+        //GameStateManager.GetInstance().LoadScene(0);
 	}
 	
 	// Update is called once per frame

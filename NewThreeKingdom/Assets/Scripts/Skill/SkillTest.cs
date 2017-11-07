@@ -4,33 +4,33 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class SkillTest : MonoBehaviour {
-    private NavMeshAgent _NavAgent;
-    private Animator _Animator;
-    private float _Speed;
-    public int _SkillId = 0;
-    private SkillTest _Target;
+    private NavMeshAgent m_NavAgent;
+    private Animator m_Animator;
+    private float m_Speed;
+    public int m_SkillId = 0;
+    private SkillTest m_Target;
 
-    private Skill skill = null;
+    private Skill m_Skill = null;
     private void Awake()
     {
-        _NavAgent = gameObject.AddComponent<NavMeshAgent>();
-        _NavAgent.speed = 0;
-        _NavAgent.acceleration = 0;
-        _NavAgent.angularSpeed = 0;
+        m_NavAgent = gameObject.AddComponent<NavMeshAgent>();
+        m_NavAgent.speed = 0;
+        m_NavAgent.acceleration = 0;
+        m_NavAgent.angularSpeed = 0;
 
-        _NavAgent.height = 2.0f;
-        _NavAgent.radius = 1.5f;
+        m_NavAgent.height = 2.0f;
+        m_NavAgent.radius = 1.5f;
         //距离目标位置位2米的时候停止
-        _NavAgent.stoppingDistance = 2.0f;
+        m_NavAgent.stoppingDistance = 2.0f;
         CapsuleCollider collider = gameObject.AddComponent<CapsuleCollider>();
-        collider.height = _NavAgent.height;
-        collider.radius = _NavAgent.radius;
+        collider.height = m_NavAgent.height;
+        collider.radius = m_NavAgent.radius;
         collider.center = Vector3.up * (collider.height * 0.5f);
-        _Animator = gameObject.GetComponent<Animator>();
+        m_Animator = gameObject.GetComponent<Animator>();
     }
     // Use this for initialization
     void Start () {
-        if (_SkillId>0)
+        if (m_SkillId>0)
         {
             
         }
@@ -38,19 +38,23 @@ public class SkillTest : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+        FightStateUpdate();
+    }
     private void FightStateUpdate() {
-        if (_Target==null)
+        if (m_Target==null)
         {
             //目标为空，开始查找目标
-            _Target = FindTargetInradius();
+            m_Target = FindTargetInradius();
         }
-        if (_Target!=null)
+        if (m_Target!=null)
         {
             //有攻击目标是，要开始尝试攻击
             bool moveToTarget = false;
-
+            TryAttack(out moveToTarget);
+            if (moveToTarget)
+            {
+                MoveToTarget();
+            }
         }
     }
     /// <summary>
@@ -63,8 +67,12 @@ public class SkillTest : MonoBehaviour {
         float angle = Mathf.Atan2(relative.x,relative.z)*Mathf.Rad2Deg;//根据投影得到角度
         transform.Rotate(Vector3.up*angle);
     }
+    private void MoveToTarget()
+    {
+        SetDestination(m_Target.transform.position);
+    }
     /// <summary>
-    /// 停止移动站立
+    /// 停止移动,站立
     /// </summary>
     private void StopMove()
     {
@@ -76,25 +84,27 @@ public class SkillTest : MonoBehaviour {
     /// <param name="pos"></param>
     void SetDestination(Vector3 pos)
     {
-        _NavAgent.SetDestination(pos); //NavMesh移动
+        m_NavAgent.SetDestination(pos); //NavMesh移动
     }
     /// <summary>
-    /// 准备攻击,处理战力和转向问题
+    /// 准备攻击,处理站立和转向问题
     /// </summary>
     private void PrepareAttack()
     {
-        if (_Target!=null)
+        if (m_Target!=null)
         {
-            RotateToTarget(_Target.transform.position);
+            RotateToTarget(m_Target.transform.position);
         }
+        StopMove();
     }
     public bool IsIdleToUserSkill
     {
         get
         {
-            int curSkill = _Animator.GetInteger("SkillId");
-            AnimatorStateInfo statInfo = _Animator.GetCurrentAnimatorStateInfo(0);
-            if (curSkill == 0 && statInfo.IsName("Base Layer.idle")&&_Animator.IsInTransition(0))
+            int curSkill = m_Animator.GetInteger("SkillId");//获取技能id.不等于0表示当前正在播放动画
+            AnimatorStateInfo statInfo = m_Animator.GetCurrentAnimatorStateInfo(0);//获取当前这一层的动画信息
+
+            if (curSkill == 0 && statInfo.IsName("Base Layer.idle")&&m_Animator.IsInTransition(0))//m_Animator.IsInTransition(0)当前动画不处于切换状态
             {
                 return true;
             }
@@ -109,11 +119,11 @@ public class SkillTest : MonoBehaviour {
     public void TryAttack(out bool moveToTarget)
     {
         moveToTarget = false;
-        if (skill!=null)
+        if (m_Skill!=null)
         {
-            if (skill.CoolDown)//技能是否冷却
+            if (m_Skill.CoolDown)//技能是否冷却
             {
-                if (Vector3.Distance(transform.position,_Target.transform.position)>=skill.AttackDist)//距离大于技能攻击距离，
+                if (Vector3.Distance(transform.position,m_Target.transform.position)>=m_Skill.AttackDist)//距离大于技能攻击距离，
                 {
                     moveToTarget = true;//移动向目标
                     return;
@@ -123,6 +133,10 @@ public class SkillTest : MonoBehaviour {
                     PrepareAttack();
                 }
                 //如果是站立，就进行播放战斗技能动作
+                if (IsIdleToUserSkill)
+                {
+                    m_Animator.SetInteger("SkillID",m_Skill.SkillId);
+                }
             }
         }
     }
@@ -134,7 +148,7 @@ public class SkillTest : MonoBehaviour {
     private SkillTest FindTargetInradius()
     {
         //
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 100, 1 << LayerMask.NameToLayer("Warrior"));
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 100, 1 << LayerMask.NameToLayer("Warrior"));//半径范围内的目标
         foreach (var item in colliders)
         {
             SkillTest unit = item.gameObject.GetComponent<SkillTest>();
