@@ -35,7 +35,7 @@ public class GameStateManager{
     }
     public void LoadScene(int sceneID)
     {
-        SceneData sceneDate = new SceneData();//应该通过ID读取配置文件获取场景信息
+        SceneData sceneDate = new SceneData();//使用中应该通过读取配置文件ID获取场景信息
         sceneDate.ID = 1;
         sceneDate.Name = "";
         sceneDate.LevelName = "LoginScene";

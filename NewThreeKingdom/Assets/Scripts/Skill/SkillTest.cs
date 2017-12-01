@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class SkillTest : MonoBehaviour {
     private NavMeshAgent m_NavAgent;
     private Animator m_Animator;
-    private float m_Speed;
+    private float m_Speed=3;
     public int m_SkillId = 0;
     private SkillTest m_Target;
 
@@ -35,10 +35,54 @@ public class SkillTest : MonoBehaviour {
             
         }
     }
-	
 	// Update is called once per frame
 	void Update () {
         FightStateUpdate();
+    }
+    //和Update类似，每帧调用
+    private void OnAnimatorMove()
+    {
+        if (NeedMove)
+        {
+            if (m_Animator.GetBool("Move"))
+            {
+                m_Animator.SetBool("Move", true);
+            }
+            AnimatorStateInfo stateInfo = m_Animator.GetCurrentAnimatorStateInfo(0);
+            if (stateInfo.IsName("Base Layer.run")&&!m_Animator.IsInTransition(0))
+            {
+                NavmeshMove();
+            }
+        }else
+        {
+            if (m_Animator.GetBool("Move"))
+            {
+                m_Animator.SetBool("Move",false);
+                m_NavAgent.velocity = Vector3.zero;//寻路停止
+            }
+        }
+    }
+    void NavmeshMove()
+    {
+        m_NavAgent.Move(transform.forward*m_Speed*Time.deltaTime);
+        Vector3 lookAt = m_NavAgent.steeringTarget - transform.position;
+        lookAt.y = 0;
+        if (lookAt!=Vector3.zero)
+        {
+            Quaternion qt = Quaternion.LookRotation(lookAt, Vector3.up);//根据y轴进行旋转
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, qt, 10);
+        }
+    }
+    public bool NeedMove
+    {
+        get
+        {
+            if (m_NavAgent.remainingDistance<=m_NavAgent.stoppingDistance)//remainingDistance:当前路径上的剩余距离
+            {                                                             //stoppingDistance:从目标位置内停止距离
+                return false;
+            }
+            return true;
+        }
     }
     private void FightStateUpdate() {
         if (m_Target==null)
@@ -85,7 +129,7 @@ public class SkillTest : MonoBehaviour {
     void SetDestination(Vector3 pos)
     {
         m_NavAgent.SetDestination(pos); //NavMesh移动
-    }
+    } 
     /// <summary>
     /// 准备攻击,处理站立和转向问题
     /// </summary>
@@ -104,13 +148,14 @@ public class SkillTest : MonoBehaviour {
             int curSkill = m_Animator.GetInteger("SkillId");//获取技能id.不等于0表示当前正在播放动画
             AnimatorStateInfo statInfo = m_Animator.GetCurrentAnimatorStateInfo(0);//获取当前这一层的动画信息
 
-            if (curSkill == 0 && statInfo.IsName("Base Layer.idle")&&m_Animator.IsInTransition(0))//m_Animator.IsInTransition(0)当前动画不处于切换状态
+            if (curSkill == 0 && statInfo.IsName("Base Layer.idle") && m_Animator.IsInTransition(0))//m_Animator.IsInTransition(0)当前动画不处于切换状态
             {
                 return true;
             }
             return false;
         }
     }
+
     /// <summary>
     /// 尝试使用攻击，如果在攻击范围内就准备攻击
     /// 如果不再攻击范围内，就需要移动至目标
@@ -123,7 +168,7 @@ public class SkillTest : MonoBehaviour {
         {
             if (m_Skill.CoolDown)//技能是否冷却
             {
-                if (Vector3.Distance(transform.position,m_Target.transform.position)>=m_Skill.AttackDist)//距离大于技能攻击距离，
+                if (Vector3.Distance(transform.position,m_Target.transform.position)>=m_Skill.AttackDist)//距离大于技能攻击距离
                 {
                     moveToTarget = true;//移动向目标
                     return;
@@ -140,14 +185,12 @@ public class SkillTest : MonoBehaviour {
             }
         }
     }
-
     /// <summary>
     /// 在一定范围查找带有SkillTest的攻击目标
     /// </summary>
     /// <returns></returns>
     private SkillTest FindTargetInradius()
     {
-        //
         Collider[] colliders = Physics.OverlapSphere(transform.position, 100, 1 << LayerMask.NameToLayer("Warrior"));//半径范围内的目标
         foreach (var item in colliders)
         {
